@@ -16,7 +16,7 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
       transition={{ delay: index * 0.1 }}
       className="group relative rounded-2xl overflow-hidden glass-card h-full flex flex-col"
     >
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-80" />
+      <div className="absolute inset-0 bg-gradient-to-t from-primary/10 via-transparent to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-80" />
       
       <div className="relative p-8 flex flex-col h-full z-10">
         <div className="mb-auto">
@@ -34,13 +34,13 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
         </div>
 
         {project.link && (
-          <div className="mt-6 pt-6 border-t border-white/10 flex items-center justify-between">
-            <span className="text-sm font-medium text-zinc-500">View Project</span>
+          <div className="mt-6 pt-6 border-t border-border flex items-center justify-between">
+            <span className="text-sm font-medium text-muted-foreground">View Project</span>
             <a 
               href={project.link}
               target="_blank" 
               rel="noreferrer"
-              className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/5 hover:bg-primary hover:text-black transition-all duration-300"
+              className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-secondary hover:bg-primary hover:text-primary-foreground transition-all duration-300"
             >
               <ExternalLink className="w-4 h-4" />
             </a>

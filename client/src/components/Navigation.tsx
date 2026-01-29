@@ -20,7 +20,7 @@ export function Navigation() {
   const navBackground = useTransform(
     scrollY,
     [0, 50],
-    ["rgba(10, 10, 10, 0)", "rgba(10, 10, 10, 0.8)"]
+    ["rgba(248, 250, 252, 0)", "rgba(248, 250, 252, 0.9)"]
   );
 
   const navBackdropBlur = useTransform(
@@ -42,7 +42,7 @@ export function Navigation() {
       style={{ backgroundColor: navBackground, backdropFilter: navBackdropBlur }}
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b border-transparent",
-        scrolled && "border-white/5 py-2",
+        scrolled && "border-border py-2 shadow-sm",
         !scrolled && "py-4"
       )}
     >
@@ -91,7 +91,7 @@ export function Navigation() {
                 smooth={true}
                 offset={-100}
                 duration={500}
-                className="cursor-pointer px-6 py-2.5 rounded-full border border-primary/30 text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300 font-medium text-sm shadow-[0_0_15px_-3px_rgba(212,175,55,0.3)] hover:shadow-[0_0_20px_0px_rgba(212,175,55,0.6)]"
+                className="cursor-pointer px-6 py-2.5 rounded-full border border-primary/30 text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300 font-medium text-sm shadow-lg hover:shadow-xl"
               >
                 Hire Me
               </ScrollLink>
@@ -116,7 +116,7 @@ export function Navigation() {
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: "auto" }}
           exit={{ opacity: 0, height: 0 }}
-          className="md:hidden glass border-b border-white/10"
+          className="md:hidden glass border-b border-border"
         >
           <div className="px-4 pt-2 pb-6 space-y-2">
             {navItems.map((item) => (
@@ -127,7 +127,7 @@ export function Navigation() {
                 smooth={true}
                 offset={-100}
                 duration={500}
-                className="block px-3 py-3 rounded-md text-base font-medium text-foreground hover:text-primary hover:bg-white/5 transition-colors"
+                className="block px-3 py-3 rounded-md text-base font-medium text-foreground hover:text-primary hover:bg-secondary transition-colors"
                 onClick={() => setIsOpen(false)}
               >
                 {item.name}
