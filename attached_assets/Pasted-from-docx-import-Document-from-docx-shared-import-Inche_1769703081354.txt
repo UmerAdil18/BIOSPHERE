@@ -1,0 +1,89 @@
+from docx import Document
+from docx.shared import Inches, Pt
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+
+doc = Document()
+
+section = doc.sections[0]
+section.left_margin = Inches(0.5)
+section.right_margin = Inches(0.5)
+section.top_margin = Inches(0.5)
+section.bottom_margin = Inches(0.5)
+
+# Name
+name = doc.add_paragraph("MUHAMMAD UMER ADIL")
+name.runs[0].font.size = Pt(22)
+name.runs[0].font.bold = True
+name.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+title = doc.add_paragraph("Web Developer | Graphic Designer | Tech Enthusiast")
+title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+doc.add_paragraph("")
+
+doc.add_heading("CONTACT", level=2)
+doc.add_paragraph("Karachi, Pakistan")
+doc.add_paragraph("+92-330-6898730")
+doc.add_paragraph("umeroffi18@gmail.com")
+doc.add_paragraph("linkedin.com/in/m-umer-adil-84b7753a2")
+
+doc.add_heading("PROFESSIONAL SUMMARY", level=2)
+doc.add_paragraph(
+    "Motivated and responsible student with strong technical and computer skills. "
+    "Quick learner with adaptability to different environments. Passionate about "
+    "technology, web development, graphic design, and cybersecurity."
+)
+
+doc.add_heading("EDUCATION", level=2)
+doc.add_paragraph("Intermediate in Computer Science (In Progress)\nDJ Sindh Government Science College, Karachi")
+doc.add_paragraph("Matriculation in Computer Science\nUsman Public School System, Karachi")
+
+doc.add_heading("CERTIFICATIONS & COURSES", level=2)
+certs = [
+    "Computer Basics – Al Mustafa Learning Center",
+    "Web Development (JavaScript, React, React Native) – Squad CodersDev",
+    "Graphic Designing (Adobe Illustrator & Photoshop) – Bano Qabil",
+    "Cyber Security – NED University (Currently Enrolled)",
+    "AutoCAD – Self-learned (3–4 real projects)",
+    "WordPress – Self-learned"
+]
+for c in certs:
+    doc.add_paragraph(c, style='List Bullet')
+
+doc.add_heading("WORK EXPERIENCE", level=2)
+doc.add_paragraph(
+    "Angular Intern (Paid) – Qavi Tech Software House\n"
+    "• Worked on Angular web development projects\n"
+    "• Gained frontend development experience\n"
+    "• Collaborated with team members"
+)
+
+doc.add_heading("PROJECTS", level=2)
+projects = [
+    "WordPress – 2 live websites (USA)",
+    "AutoCAD – 3–4 real projects",
+    "Web Development – JavaScript, React, React Native",
+    "Graphic Design – Photoshop, Illustrator, Canva"
+]
+for p in projects:
+    doc.add_paragraph(p, style='List Bullet')
+
+doc.add_heading("SKILLS", level=2)
+skills = [
+    "AutoCAD",
+    "MS Word, Excel, PowerPoint",
+    "JavaScript, React, React Native (Basic), Angular (Basic)",
+    "WordPress",
+    "Adobe Photoshop, Illustrator, Canva",
+    "AI Tools",
+    "Communication & Teamwork",
+    "Time Management",
+    "Problem Solving"
+]
+for s in skills:
+    doc.add_paragraph(s, style='List Bullet')
+
+doc.add_heading("LANGUAGES", level=2)
+doc.add_paragraph("English, Urdu")
+
+doc.save("Muhammad_Umer_Adil_CV.docx")
