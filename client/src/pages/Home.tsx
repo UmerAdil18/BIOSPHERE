@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
-  Github, 
   Linkedin, 
   Mail, 
   MapPin, 
@@ -9,7 +8,8 @@ import {
   Award, 
   Code2, 
   Globe,
-  Download
+  Download,
+  Send
 } from 'lucide-react';
 import { 
   useProfile, 
@@ -42,115 +42,148 @@ export default function Home() {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-muted-foreground font-heading italic">Loading Masterpiece...</p>
+          <p className="text-muted-foreground font-heading italic">Loading...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-x-hidden selection:bg-primary/30">
+    <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       <Navigation />
 
       {/* Hero Section */}
-      <section id="about" className="min-h-screen relative flex items-center justify-center pt-20 overflow-hidden">
-        {/* Abstract Background Shapes */}
-        <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
-          <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-primary/20 rounded-full blur-[100px] opacity-40"></div>
-          <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-sky-300/20 rounded-full blur-[120px] opacity-30"></div>
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
-          <div className="flex flex-col md:flex-row items-center gap-12 md:gap-20">
+      <section id="about" className="min-h-screen relative flex items-center pt-20 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-12">
+          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
             {/* Text Content */}
             <motion.div 
-              className="flex-1 text-center md:text-left"
-              initial={{ opacity: 0, x: -50 }}
+              className="flex-1 text-center lg:text-left"
+              initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
             >
+              {/* Available Badge */}
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="inline-block px-4 py-1.5 mb-6 rounded-full border border-primary/30 bg-primary/10 text-primary text-sm font-bold tracking-widest uppercase"
+                transition={{ delay: 0.1 }}
+                className="inline-block px-4 py-1.5 mb-8 rounded-full border border-emerald-400 bg-emerald-50 text-emerald-600 text-sm font-medium"
               >
-                Frontend Developer & Designer
+                Available for Work
               </motion.div>
               
-              <h1 className="text-5xl md:text-7xl lg:text-8xl font-heading font-bold mb-6 leading-tight">
-                Hello, I'm <br />
-                <span className="text-blue-gradient drop-shadow-sm">{profile?.name}</span>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold mb-2 leading-tight text-foreground">
+                Hello, I'm
+              </h1>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold mb-6 leading-tight">
+                <span className="bg-gradient-to-r from-teal-500 via-cyan-500 to-blue-500 bg-clip-text text-transparent">{profile?.name}</span>
               </h1>
               
-              <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto md:mx-0 leading-relaxed font-light">
-                {profile?.summary}
+              <p className="text-lg md:text-xl text-muted-foreground mb-6 font-medium">
+                {profile?.title}
               </p>
               
-              <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4">
-                <Button className="h-12 px-8 bg-primary text-primary-foreground hover:bg-primary/90 rounded-full font-bold text-base shadow-lg hover:shadow-xl transition-all">
-                  View My Work
+              <p className="text-base text-muted-foreground mb-2 max-w-xl mx-auto lg:mx-0 leading-relaxed">
+                {profile?.summary}
+              </p>
+              <p className="text-base text-muted-foreground mb-8">
+                Based in <span className="font-semibold text-foreground">{profile?.location}</span>.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-8">
+                <Button className="h-12 px-6 bg-gradient-to-r from-teal-500 to-cyan-500 text-white hover:from-teal-600 hover:to-cyan-600 rounded-lg font-medium text-base shadow-lg">
+                  Contact Me <Send className="ml-2 w-4 h-4" />
                 </Button>
-                <Button variant="outline" className="h-12 px-8 rounded-full border-border hover:bg-secondary font-medium text-base">
-                  <Download className="mr-2 w-4 h-4" /> Download CV
+                <Button variant="outline" className="h-12 px-6 rounded-lg border-border hover:bg-secondary font-medium text-base">
+                  Download CV <Download className="ml-2 w-4 h-4" />
                 </Button>
               </div>
 
-              <div className="mt-12 flex items-center justify-center md:justify-start gap-6 text-muted-foreground">
-                <a href={profile?.linkedin} className="hover:text-primary transition-colors hover:scale-110 transform duration-200">
-                  <Linkedin className="w-6 h-6" />
+              <div className="flex items-center justify-center lg:justify-start gap-4 text-muted-foreground">
+                <a href={profile?.linkedin} className="hover:text-primary transition-colors p-2 rounded-lg hover:bg-secondary">
+                  <Linkedin className="w-5 h-5" />
                 </a>
-                <a href={`mailto:${profile?.email}`} className="hover:text-primary transition-colors hover:scale-110 transform duration-200">
-                  <Mail className="w-6 h-6" />
+                <a href={`mailto:${profile?.email}`} className="hover:text-primary transition-colors p-2 rounded-lg hover:bg-secondary">
+                  <Mail className="w-5 h-5" />
                 </a>
-                <div className="w-px h-8 bg-border mx-2"></div>
-                <div className="flex items-center gap-2 text-sm">
-                  <MapPin className="w-4 h-4 text-primary" />
-                  {profile?.location}
-                </div>
               </div>
             </motion.div>
 
             {/* Profile Image */}
             <motion.div 
-              className="flex-1 relative"
-              initial={{ opacity: 0, scale: 0.8, rotate: 5 }}
-              animate={{ opacity: 1, scale: 1, rotate: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+              className="flex-1 relative flex justify-center"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <div className="relative w-80 h-80 md:w-[450px] md:h-[450px] mx-auto">
-                <div className="absolute inset-0 rounded-[2rem] bg-gradient-to-tr from-primary/30 to-sky-200/30 rotate-6 transform translate-x-4 translate-y-4"></div>
-                <div className="absolute inset-0 rounded-[2rem] border border-border bg-card/80 backdrop-blur-sm overflow-hidden shadow-2xl">
-                  <img 
-                    src="/images/profile.png" 
-                    alt={profile?.name} 
-                    className="w-full h-full object-cover object-center"
-                  />
+              <div className="relative w-72 h-72 md:w-96 md:h-96">
+                {/* Outer ring */}
+                <div className="absolute inset-0 rounded-full border-[3px] border-cyan-200/60"></div>
+                {/* Inner gradient ring */}
+                <div className="absolute inset-4 rounded-full bg-gradient-to-br from-cyan-100 via-sky-50 to-teal-100 p-1">
+                  <div className="w-full h-full rounded-full bg-white overflow-hidden shadow-xl">
+                    <img 
+                      src="/images/profile.png" 
+                      alt={profile?.name} 
+                      className="w-full h-full object-cover object-center"
+                    />
+                  </div>
                 </div>
-                {/* Decorative Elements */}
-                <div className="absolute -top-6 -right-6 w-24 h-24 bg-primary rounded-full blur-2xl opacity-30"></div>
-                <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-sky-400 rounded-full blur-2xl opacity-20"></div>
+                {/* Decorative circles */}
+                <div className="absolute -top-4 -right-4 w-20 h-20 bg-cyan-100 rounded-full blur-xl opacity-60"></div>
+                <div className="absolute -bottom-4 -left-4 w-24 h-24 bg-teal-100 rounded-full blur-xl opacity-60"></div>
               </div>
             </motion.div>
           </div>
         </div>
-        
-        {/* Scroll Indicator */}
-        <motion.div 
-          className="absolute bottom-10 left-1/2 -translate-x-1/2"
-          animate={{ y: [0, 10, 0] }}
-          transition={{ repeat: Infinity, duration: 2 }}
-        >
-          <div className="w-6 h-10 border-2 border-border rounded-full flex justify-center pt-2">
-            <div className="w-1 h-1 bg-primary rounded-full"></div>
+      </section>
+
+      {/* Skills Section */}
+      <section id="skills" className="py-24 relative overflow-hidden bg-secondary/30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <SectionHeading title="Technical Expertise" subtitle="Skills" />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
+            {skillsLoading ? (
+              Array(3).fill(0).map((_, i) => <Skeleton key={i} className="h-64 w-full rounded-xl bg-muted" />)
+            ) : (
+              skills?.map((skillGroup, index) => (
+                <motion.div
+                  key={skillGroup.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  className="bg-card p-8 rounded-2xl border border-border hover:border-primary/30 hover:shadow-lg transition-all"
+                >
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="p-2 rounded-lg bg-gradient-to-br from-teal-500 to-cyan-500 text-white">
+                      <Code2 className="w-6 h-6" />
+                    </div>
+                    <h3 className="text-xl font-heading font-bold">{skillGroup.category}</h3>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {skillGroup.items.map((item, idx) => (
+                      <span 
+                        key={idx} 
+                        className="px-3 py-1.5 text-sm bg-secondary border border-border rounded-lg hover:border-primary/50 hover:bg-primary/5 hover:text-primary transition-all cursor-default"
+                      >
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                </motion.div>
+              ))
+            )}
           </div>
-        </motion.div>
+        </div>
       </section>
 
       {/* Experience Section */}
-      <section id="experience" className="py-24 relative bg-secondary/50">
+      <section id="experience" className="py-24 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <SectionHeading title="Professional Experience" subtitle="My Career Journey" />
+          <SectionHeading title="Professional Experience" subtitle="Experience" />
           
           <div className="relative max-w-5xl mx-auto mt-12 space-y-8 md:space-y-12">
             {expLoading ? (
@@ -164,51 +197,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Skills Section */}
-      <section id="skills" className="py-24 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <SectionHeading title="Technical Expertise" subtitle="Tools & Technologies" />
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
-            {skillsLoading ? (
-              Array(3).fill(0).map((_, i) => <Skeleton key={i} className="h-64 w-full rounded-xl bg-muted" />)
-            ) : (
-              skills?.map((skillGroup, index) => (
-                <motion.div
-                  key={skillGroup.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  className="glass-card p-8 rounded-2xl"
-                >
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="p-2 rounded-lg bg-primary/10 text-primary">
-                      <Code2 className="w-6 h-6" />
-                    </div>
-                    <h3 className="text-xl font-heading font-bold">{skillGroup.category}</h3>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {skillGroup.items.map((item, idx) => (
-                      <span 
-                        key={idx} 
-                        className="px-3 py-1 text-sm bg-secondary border border-border rounded-md hover:border-primary/50 hover:bg-primary/10 hover:text-primary transition-all cursor-default"
-                      >
-                        {item}
-                      </span>
-                    ))}
-                  </div>
-                </motion.div>
-              ))
-            )}
-          </div>
-        </div>
-      </section>
-
       {/* Projects Section */}
-      <section id="projects" className="py-24 bg-secondary/50">
+      <section id="projects" className="py-24 bg-secondary/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <SectionHeading title="Featured Projects" subtitle="Recent Works" />
+          <SectionHeading title="Featured Projects" subtitle="Projects" />
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
              {projectsLoading ? (
@@ -222,8 +214,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Education & Certifications - Two Column Layout */}
-      <section className="py-24 relative">
+      {/* Education & Certifications */}
+      <section id="education" className="py-24 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
             
@@ -246,10 +238,10 @@ export default function Home() {
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: index * 0.1 }}
-                      className="glass-card p-6 rounded-xl border-l-4 border-l-primary"
+                      className="bg-card p-6 rounded-xl border border-border border-l-4 border-l-teal-500 hover:shadow-md transition-all"
                     >
                       <h4 className="text-lg font-bold">{edu.degree}</h4>
-                      <p className="text-primary text-sm font-medium mt-1">{edu.institution}</p>
+                      <p className="text-teal-600 text-sm font-medium mt-1">{edu.institution}</p>
                       <p className="text-muted-foreground text-sm mt-2">{edu.year}</p>
                     </motion.div>
                   ))
@@ -276,9 +268,9 @@ export default function Home() {
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: index * 0.1 }}
-                      className="flex items-start gap-4 p-6 glass-card rounded-xl"
+                      className="flex items-start gap-4 p-6 bg-card rounded-xl border border-border hover:shadow-md transition-all"
                     >
-                      <div className="mt-1 p-2 bg-primary/10 rounded-full text-primary">
+                      <div className="mt-1 p-2 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-full text-white">
                         <Award className="w-5 h-5" />
                       </div>
                       <div>
@@ -295,13 +287,13 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Languages Ticker */}
+      {/* Languages */}
       {languages && languages.length > 0 && (
         <div className="py-12 border-y border-border bg-secondary/30 overflow-hidden">
           <div className="max-w-7xl mx-auto px-4 flex justify-center gap-8 md:gap-16 flex-wrap">
             {languages.map((lang) => (
                <div key={lang.id} className="flex items-center gap-2 text-muted-foreground">
-                 <Globe className="w-4 h-4 text-primary" />
+                 <Globe className="w-4 h-4 text-teal-500" />
                  <span className="font-heading font-bold text-foreground">{lang.language}</span>
                  <span className="text-xs px-2 py-0.5 rounded-full bg-secondary border border-border">{lang.proficiency}</span>
                </div>
@@ -312,8 +304,7 @@ export default function Home() {
 
       {/* Contact Section */}
       <section id="contact" className="py-24 relative overflow-hidden">
-         {/* Background glow */}
-         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/10 rounded-full blur-[120px] pointer-events-none"></div>
+         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-cyan-100 rounded-full blur-[120px] opacity-30 pointer-events-none"></div>
 
          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -323,8 +314,8 @@ export default function Home() {
                whileInView={{ opacity: 1, x: 0 }}
                viewport={{ once: true }}
              >
-               <span className="text-primary font-bold tracking-widest uppercase text-sm mb-4 block">Get In Touch</span>
-               <h2 className="text-5xl font-heading font-bold mb-6">Let's Work Together</h2>
+               <span className="text-teal-600 font-bold tracking-widest uppercase text-sm mb-4 block">Get In Touch</span>
+               <h2 className="text-4xl md:text-5xl font-heading font-bold mb-6">Let's Work Together</h2>
                <p className="text-muted-foreground text-lg mb-8 leading-relaxed">
                  I'm currently available for freelance work and open to full-time opportunities.
                  If you have a project that needs some creative touch, let's chat.
@@ -332,7 +323,7 @@ export default function Home() {
                
                <div className="space-y-6">
                  <div className="flex items-center gap-4">
-                   <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center text-primary border border-border">
+                   <div className="w-12 h-12 rounded-full bg-gradient-to-br from-teal-500 to-cyan-500 flex items-center justify-center text-white">
                      <Phone className="w-5 h-5" />
                    </div>
                    <div>
@@ -342,7 +333,7 @@ export default function Home() {
                  </div>
                  
                  <div className="flex items-center gap-4">
-                   <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center text-primary border border-border">
+                   <div className="w-12 h-12 rounded-full bg-gradient-to-br from-teal-500 to-cyan-500 flex items-center justify-center text-white">
                      <Mail className="w-5 h-5" />
                    </div>
                    <div>
@@ -352,7 +343,7 @@ export default function Home() {
                  </div>
 
                  <div className="flex items-center gap-4">
-                   <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center text-primary border border-border">
+                   <div className="w-12 h-12 rounded-full bg-gradient-to-br from-teal-500 to-cyan-500 flex items-center justify-center text-white">
                      <MapPin className="w-5 h-5" />
                    </div>
                    <div>
@@ -377,10 +368,10 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="py-8 border-t border-border bg-secondary/50">
+      <footer className="py-8 border-t border-border bg-secondary/30">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <p className="text-muted-foreground text-sm">
-            © {new Date().getFullYear()} <span className="text-primary font-heading font-bold">Muhammad Umer Adil</span>. All rights reserved.
+            © {new Date().getFullYear()} <span className="bg-gradient-to-r from-teal-500 to-cyan-500 bg-clip-text text-transparent font-heading font-bold">Muhammad Umer Adil</span>. All rights reserved.
           </p>
         </div>
       </footer>

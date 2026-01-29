@@ -6,9 +6,10 @@ import { cn } from '@/lib/utils';
 
 const navItems = [
   { name: 'About', to: 'about' },
+  { name: 'Skills', to: 'skills' },
   { name: 'Experience', to: 'experience' },
   { name: 'Projects', to: 'projects' },
-  { name: 'Skills', to: 'skills' },
+  { name: 'Education', to: 'education' },
   { name: 'Contact', to: 'contact' },
 ];
 
@@ -20,7 +21,7 @@ export function Navigation() {
   const navBackground = useTransform(
     scrollY,
     [0, 50],
-    ["rgba(248, 250, 252, 0)", "rgba(248, 250, 252, 0.9)"]
+    ["rgba(255, 255, 255, 0)", "rgba(255, 255, 255, 0.95)"]
   );
 
   const navBackdropBlur = useTransform(
@@ -42,8 +43,7 @@ export function Navigation() {
       style={{ backgroundColor: navBackground, backdropFilter: navBackdropBlur }}
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b border-transparent",
-        scrolled && "border-border py-2 shadow-sm",
-        !scrolled && "py-4"
+        scrolled && "border-border shadow-sm",
       )}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -53,19 +53,19 @@ export function Navigation() {
             animate={{ opacity: 1, x: 0 }}
             className="flex-shrink-0 flex items-center"
           >
-            <span className="font-heading text-2xl font-bold text-foreground">
-              <span className="text-primary">M</span>. Umer
+            <span className="font-heading text-xl font-bold text-foreground tracking-wide">
+              M. <span className="font-bold">UMER ADIL</span>
             </span>
           </motion.div>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-2">
             {navItems.map((item, i) => (
               <motion.div
                 key={item.name}
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
+                transition={{ delay: i * 0.05 }}
               >
                 <ScrollLink
                   to={item.to}
@@ -73,8 +73,8 @@ export function Navigation() {
                   smooth={true}
                   offset={-100}
                   duration={500}
-                  className="cursor-pointer text-sm font-medium text-muted-foreground hover:text-primary transition-colors uppercase tracking-wider"
-                  activeClass="text-primary"
+                  className="cursor-pointer px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-secondary"
+                  activeClass="!bg-secondary !text-foreground"
                 >
                   {item.name}
                 </ScrollLink>
@@ -83,7 +83,8 @@ export function Navigation() {
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.5 }}
+              transition={{ delay: 0.3 }}
+              className="ml-2"
             >
               <ScrollLink
                 to="contact"
@@ -91,7 +92,7 @@ export function Navigation() {
                 smooth={true}
                 offset={-100}
                 duration={500}
-                className="cursor-pointer px-6 py-2.5 rounded-full border border-primary/30 text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300 font-medium text-sm shadow-lg hover:shadow-xl"
+                className="cursor-pointer px-5 py-2 rounded-lg bg-gradient-to-r from-teal-500 to-cyan-500 text-white hover:from-teal-600 hover:to-cyan-600 transition-all duration-300 font-medium text-sm shadow-lg"
               >
                 Hire Me
               </ScrollLink>
@@ -116,9 +117,9 @@ export function Navigation() {
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: "auto" }}
           exit={{ opacity: 0, height: 0 }}
-          className="md:hidden glass border-b border-border"
+          className="md:hidden bg-white/95 backdrop-blur-md border-b border-border"
         >
-          <div className="px-4 pt-2 pb-6 space-y-2">
+          <div className="px-4 pt-2 pb-6 space-y-1">
             {navItems.map((item) => (
               <ScrollLink
                 key={item.name}
@@ -127,12 +128,23 @@ export function Navigation() {
                 smooth={true}
                 offset={-100}
                 duration={500}
-                className="block px-3 py-3 rounded-md text-base font-medium text-foreground hover:text-primary hover:bg-secondary transition-colors"
+                className="block px-4 py-3 rounded-lg text-base font-medium text-foreground hover:text-primary hover:bg-secondary transition-colors"
                 onClick={() => setIsOpen(false)}
               >
                 {item.name}
               </ScrollLink>
             ))}
+            <ScrollLink
+              to="contact"
+              spy={true}
+              smooth={true}
+              offset={-100}
+              duration={500}
+              className="block px-4 py-3 rounded-lg text-base font-medium bg-gradient-to-r from-teal-500 to-cyan-500 text-white text-center mt-4"
+              onClick={() => setIsOpen(false)}
+            >
+              Hire Me
+            </ScrollLink>
           </div>
         </motion.div>
       )}

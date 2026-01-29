@@ -45,7 +45,7 @@ export function ContactForm() {
   }
 
   return (
-    <div className="glass-card p-8 md:p-10 rounded-2xl">
+    <div className="bg-card p-8 md:p-10 rounded-2xl border border-border shadow-lg">
       <h3 className="text-2xl font-heading font-bold mb-6 text-foreground">
         Send me a message
       </h3>
@@ -61,7 +61,7 @@ export function ContactForm() {
                   <Input 
                     placeholder="John Doe" 
                     {...field} 
-                    className="bg-background border-border focus:border-primary/50 h-12" 
+                    className="bg-background border-border focus:border-teal-500 h-12" 
                   />
                 </FormControl>
                 <FormMessage />
@@ -78,7 +78,7 @@ export function ContactForm() {
                   <Input 
                     placeholder="john@example.com" 
                     {...field} 
-                    className="bg-background border-border focus:border-primary/50 h-12" 
+                    className="bg-background border-border focus:border-teal-500 h-12" 
                   />
                 </FormControl>
                 <FormMessage />
@@ -95,7 +95,7 @@ export function ContactForm() {
                   <Textarea 
                     placeholder="How can I help you?" 
                     {...field} 
-                    className="bg-background border-border focus:border-primary/50 min-h-[150px] resize-none" 
+                    className="bg-background border-border focus:border-teal-500 min-h-[150px] resize-none" 
                   />
                 </FormControl>
                 <FormMessage />
@@ -105,7 +105,7 @@ export function ContactForm() {
           <Button 
             type="submit" 
             disabled={isPending}
-            className="w-full h-12 bg-primary text-primary-foreground hover:bg-primary/90 font-bold tracking-wide transition-all"
+            className="w-full h-12 bg-gradient-to-r from-teal-500 to-cyan-500 text-white hover:from-teal-600 hover:to-cyan-600 font-bold tracking-wide transition-all"
           >
             {isPending ? (
               <>
