@@ -1,13 +1,14 @@
 import { z } from 'zod';
 import { 
-  insertProfileSchema, 
   insertEducationSchema, 
   insertExperienceSchema, 
   insertSkillSchema, 
   insertProjectSchema, 
   insertCertificationSchema,
   insertLanguageSchema,
-  profile,
+  signupSchema,
+  loginSchema,
+  users,
   education,
   experience,
   skills,
@@ -17,75 +18,142 @@ import {
 } from './schema';
 
 export const api = {
+  auth: {
+    signup: {
+      method: 'POST' as const,
+      path: '/api/auth/signup',
+      input: signupSchema,
+    },
+    login: {
+      method: 'POST' as const,
+      path: '/api/auth/login',
+      input: loginSchema,
+    },
+    logout: {
+      method: 'POST' as const,
+      path: '/api/auth/logout',
+    },
+    me: {
+      method: 'GET' as const,
+      path: '/api/auth/me',
+    },
+  },
   profile: {
     get: {
       method: 'GET' as const,
       path: '/api/profile',
-      responses: {
-        200: z.custom<typeof profile.$inferSelect>(),
-      },
     },
     update: {
-      method: 'POST' as const,
+      method: 'PATCH' as const,
       path: '/api/profile',
-      input: insertProfileSchema,
-      responses: {
-        200: z.custom<typeof profile.$inferSelect>(),
-      },
     },
   },
   education: {
     list: {
       method: 'GET' as const,
       path: '/api/education',
-      responses: {
-        200: z.array(z.custom<typeof education.$inferSelect>()),
-      },
+    },
+    create: {
+      method: 'POST' as const,
+      path: '/api/education',
+    },
+    update: {
+      method: 'PATCH' as const,
+      path: '/api/education/:id',
+    },
+    delete: {
+      method: 'DELETE' as const,
+      path: '/api/education/:id',
     },
   },
   experience: {
     list: {
       method: 'GET' as const,
       path: '/api/experience',
-      responses: {
-        200: z.array(z.custom<typeof experience.$inferSelect>()),
-      },
+    },
+    create: {
+      method: 'POST' as const,
+      path: '/api/experience',
+    },
+    update: {
+      method: 'PATCH' as const,
+      path: '/api/experience/:id',
+    },
+    delete: {
+      method: 'DELETE' as const,
+      path: '/api/experience/:id',
     },
   },
   skills: {
     list: {
       method: 'GET' as const,
       path: '/api/skills',
-      responses: {
-        200: z.array(z.custom<typeof skills.$inferSelect>()),
-      },
+    },
+    create: {
+      method: 'POST' as const,
+      path: '/api/skills',
+    },
+    update: {
+      method: 'PATCH' as const,
+      path: '/api/skills/:id',
+    },
+    delete: {
+      method: 'DELETE' as const,
+      path: '/api/skills/:id',
     },
   },
   projects: {
     list: {
       method: 'GET' as const,
       path: '/api/projects',
-      responses: {
-        200: z.array(z.custom<typeof projects.$inferSelect>()),
-      },
+    },
+    create: {
+      method: 'POST' as const,
+      path: '/api/projects',
+    },
+    update: {
+      method: 'PATCH' as const,
+      path: '/api/projects/:id',
+    },
+    delete: {
+      method: 'DELETE' as const,
+      path: '/api/projects/:id',
     },
   },
   certifications: {
     list: {
       method: 'GET' as const,
       path: '/api/certifications',
-      responses: {
-        200: z.array(z.custom<typeof certifications.$inferSelect>()),
-      },
+    },
+    create: {
+      method: 'POST' as const,
+      path: '/api/certifications',
+    },
+    update: {
+      method: 'PATCH' as const,
+      path: '/api/certifications/:id',
+    },
+    delete: {
+      method: 'DELETE' as const,
+      path: '/api/certifications/:id',
     },
   },
   languages: {
     list: {
       method: 'GET' as const,
       path: '/api/languages',
-      responses: {
-        200: z.array(z.custom<typeof languages.$inferSelect>()),
-      },
+    },
+    create: {
+      method: 'POST' as const,
+      path: '/api/languages',
+    },
+    update: {
+      method: 'PATCH' as const,
+      path: '/api/languages/:id',
+    },
+    delete: {
+      method: 'DELETE' as const,
+      path: '/api/languages/:id',
     },
   },
   contact: {
@@ -97,9 +165,6 @@ export const api = {
         email: z.string().email(),
         message: z.string(),
       }),
-      responses: {
-        200: z.object({ success: z.boolean() }),
-      },
     },
   },
 };
