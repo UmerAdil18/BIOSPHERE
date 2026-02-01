@@ -430,7 +430,7 @@ export default function Home() {
       <footer className="py-8 border-t border-border bg-secondary/30">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <p className="text-muted-foreground text-sm">
-            © {new Date().getFullYear()} <span className="bg-gradient-to-r from-teal-500 to-cyan-500 bg-clip-text text-transparent font-heading font-bold">{profile?.name || user.name}</span>. All rights reserved.
+            © {new Date().getFullYear()} <span className="bg-gradient-to-r from-teal-500 to-cyan-500 bg-clip-text text-transparent font-heading font-bold">BIOSPHERE</span>. All rights reserved.
           </p>
         </div>
       </footer>

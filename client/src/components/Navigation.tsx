@@ -56,9 +56,18 @@ export function Navigation() {
             animate={{ opacity: 1, x: 0 }}
             className="flex-shrink-0 flex items-center"
           >
-            <span className="font-heading text-xl font-bold text-foreground tracking-wide">
-              M. <span className="font-bold">UMER ADIL</span>
-            </span>
+
+<span className="font-heading text-xl font-bold text-foreground tracking-wide flex items-center">
+  <img
+    src="/images/logo.png"
+    alt="BIOSPHERE Logo"
+    className="h-16 w-auto mr-2" // adjust height and spacing
+  /> 
+  </span>
+            
+            <span className="font-heading text-xl font-bold tracking-wide bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 bg-clip-text text-transparent">
+  BIOSPHERE
+</span>
           </motion.div>
 
           {/* Desktop Menu */}
