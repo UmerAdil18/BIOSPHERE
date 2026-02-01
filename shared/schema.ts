@@ -13,7 +13,19 @@ export const users = pgTable("users", {
   location: text("location").default(""),
   phone: text("phone").default(""),
   linkedin: text("linkedin").default(""),
-  imageUrl: text("image_url").default("/images/profile.png"),
+  imageUrl: text("image_url").default(""),
+  cvUrl: text("cv_url").default(""),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Contact messages table
+export const contactMessages = pgTable("contact_messages", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  senderName: text("sender_name").notNull(),
+  senderEmail: text("sender_email").notNull(),
+  message: text("message").notNull(),
+  isRead: boolean("is_read").default(false),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -87,6 +99,7 @@ export const insertSkillSchema = createInsertSchema(skills).omit({ id: true });
 export const insertProjectSchema = createInsertSchema(projects).omit({ id: true });
 export const insertCertificationSchema = createInsertSchema(certifications).omit({ id: true });
 export const insertLanguageSchema = createInsertSchema(languages).omit({ id: true });
+export const insertContactMessageSchema = createInsertSchema(contactMessages).omit({ id: true, createdAt: true });
 
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -109,6 +122,9 @@ export type InsertCertification = z.infer<typeof insertCertificationSchema>;
 export type Language = typeof languages.$inferSelect;
 export type InsertLanguage = z.infer<typeof insertLanguageSchema>;
 
+export type ContactMessage = typeof contactMessages.$inferSelect;
+export type InsertContactMessage = z.infer<typeof insertContactMessageSchema>;
+
 // Public profile type for display
 export type Profile = {
   id: number;
@@ -120,4 +136,5 @@ export type Profile = {
   email: string;
   linkedin: string | null;
   imageUrl: string | null;
+  cvUrl: string | null;
 };

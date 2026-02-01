@@ -1,5 +1,5 @@
 import { 
-  users, education, experience, skills, projects, certifications, languages,
+  users, education, experience, skills, projects, certifications, languages, contactMessages,
   type User, type InsertUser,
   type Education, type InsertEducation,
   type Experience, type InsertExperience,
@@ -7,10 +7,11 @@ import {
   type Project, type InsertProject,
   type Certification, type InsertCertification,
   type Language, type InsertLanguage,
+  type ContactMessage, type InsertContactMessage,
   type Profile
 } from "@shared/schema";
 import { db } from "./db";
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 
 export interface IStorage {
   // User auth
@@ -57,6 +58,12 @@ export interface IStorage {
   createLanguage(data: InsertLanguage): Promise<Language>;
   updateLanguage(id: number, data: Partial<InsertLanguage>): Promise<Language>;
   deleteLanguage(id: number): Promise<void>;
+  
+  // Contact Messages
+  getContactMessages(userId: number): Promise<ContactMessage[]>;
+  createContactMessage(data: InsertContactMessage): Promise<ContactMessage>;
+  markMessageRead(id: number): Promise<void>;
+  deleteContactMessage(id: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -100,6 +107,7 @@ export class DatabaseStorage implements IStorage {
       email: user.email,
       linkedin: user.linkedin,
       imageUrl: user.imageUrl,
+      cvUrl: user.cvUrl,
     };
   }
 
@@ -215,6 +223,24 @@ export class DatabaseStorage implements IStorage {
 
   async deleteLanguage(id: number): Promise<void> {
     await db.delete(languages).where(eq(languages.id, id));
+  }
+
+  // Contact Messages
+  async getContactMessages(userId: number): Promise<ContactMessage[]> {
+    return await db.select().from(contactMessages).where(eq(contactMessages.userId, userId)).orderBy(desc(contactMessages.createdAt));
+  }
+
+  async createContactMessage(data: InsertContactMessage): Promise<ContactMessage> {
+    const [newMsg] = await db.insert(contactMessages).values(data).returning();
+    return newMsg;
+  }
+
+  async markMessageRead(id: number): Promise<void> {
+    await db.update(contactMessages).set({ isRead: true }).where(eq(contactMessages.id, id));
+  }
+
+  async deleteContactMessage(id: number): Promise<void> {
+    await db.delete(contactMessages).where(eq(contactMessages.id, id));
   }
 }
 

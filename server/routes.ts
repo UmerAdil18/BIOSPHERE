@@ -6,6 +6,49 @@ import bcrypt from "bcryptjs";
 import session from "express-session";
 import connectPgSimple from "connect-pg-simple";
 import { z } from "zod";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+
+// Setup file upload
+const uploadDir = path.join(process.cwd(), "uploads");
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+const storage_multer = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ 
+  storage: storage_multer,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB max
+  fileFilter: (req, file, cb) => {
+    if (file.fieldname === 'image') {
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+      if (allowedTypes.includes(file.mimetype)) {
+        cb(null, true);
+      } else {
+        cb(new Error('Invalid image type'));
+      }
+    } else if (file.fieldname === 'cv') {
+      const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+      if (allowedTypes.includes(file.mimetype)) {
+        cb(null, true);
+      } else {
+        cb(new Error('Invalid CV type. Only PDF, DOC, DOCX allowed.'));
+      }
+    } else {
+      cb(null, true);
+    }
+  }
+});
 
 declare module "express-session" {
   interface SessionData {
@@ -70,7 +113,8 @@ export async function registerRoutes(
         location: input.location || "",
         phone: input.phone || "",
         linkedin: input.linkedin || "",
-        imageUrl: "/images/profile.png",
+        imageUrl: "",
+        cvUrl: "",
       });
 
       req.session.userId = user.id;
@@ -397,9 +441,73 @@ export async function registerRoutes(
     }
   });
 
-  // Contact
+  // File upload routes
+  app.use("/uploads", require("express").static(uploadDir));
+
+  app.post("/api/upload/image", requireAuth, upload.single('image'), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: "No image file uploaded" });
+      }
+      const imageUrl = `/uploads/${req.file.filename}`;
+      await storage.updateUser(req.session.userId!, { imageUrl });
+      res.json({ imageUrl });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Upload failed" });
+    }
+  });
+
+  app.post("/api/upload/cv", requireAuth, upload.single('cv'), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: "No CV file uploaded" });
+      }
+      const cvUrl = `/uploads/${req.file.filename}`;
+      await storage.updateUser(req.session.userId!, { cvUrl });
+      res.json({ cvUrl });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Upload failed" });
+    }
+  });
+
+  // Contact - stores message for portfolio owner
   app.post("/api/contact", async (req, res) => {
-    console.log("Contact form submitted:", req.body);
+    try {
+      const { name, email, message, userId } = req.body;
+      if (!name || !email || !message || !userId) {
+        return res.status(400).json({ error: "All fields are required" });
+      }
+      
+      await storage.createContactMessage({
+        userId: parseInt(userId),
+        senderName: name,
+        senderEmail: email,
+        message,
+        isRead: false,
+      });
+      
+      res.json({ success: true, message: "Message sent successfully!" });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Failed to send message" });
+    }
+  });
+
+  // Contact Messages (for logged in user to view their messages)
+  app.get("/api/messages", requireAuth, async (req, res) => {
+    const messages = await storage.getContactMessages(req.session.userId!);
+    res.json(messages);
+  });
+
+  app.patch("/api/messages/:id/read", requireAuth, async (req, res) => {
+    await storage.markMessageRead(parseInt(req.params.id as string));
+    res.json({ success: true });
+  });
+
+  app.delete("/api/messages/:id", requireAuth, async (req, res) => {
+    await storage.deleteContactMessage(parseInt(req.params.id as string));
     res.json({ success: true });
   });
 
