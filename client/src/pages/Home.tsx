@@ -124,9 +124,13 @@ export default function Home() {
                 <Button className="h-12 px-6 bg-gradient-to-r from-teal-500 to-cyan-500 text-white hover:from-teal-600 hover:to-cyan-600 rounded-lg font-medium text-base shadow-lg">
                   Contact Me <Send className="ml-2 w-4 h-4" />
                 </Button>
-                <Button variant="outline" className="h-12 px-6 rounded-lg border-border hover:bg-secondary font-medium text-base">
-                  Download CV <Download className="ml-2 w-4 h-4" />
-                </Button>
+                {(profile?.cvUrl || user.cvUrl) && (
+                  <a href={profile?.cvUrl || user.cvUrl || "#"} download>
+                    <Button variant="outline" className="h-12 px-6 rounded-lg border-border hover:bg-secondary font-medium text-base">
+                      Download CV <Download className="ml-2 w-4 h-4" />
+                    </Button>
+                  </a>
+                )}
               </div>
 
               <div className="flex items-center justify-center lg:justify-start gap-4 text-muted-foreground">
@@ -154,11 +158,19 @@ export default function Home() {
                 {/* Inner gradient ring */}
                 <div className="absolute inset-4 rounded-full bg-gradient-to-br from-cyan-100 via-sky-50 to-teal-100 p-1">
                   <div className="w-full h-full rounded-full bg-white overflow-hidden shadow-xl flex items-center justify-center">
-                    <div className="w-24 h-24 rounded-full bg-gradient-to-br from-teal-100 to-cyan-100 flex items-center justify-center">
-                      <span className="text-4xl font-heading font-bold text-teal-600">
-                        {(profile?.name || user.name || "U").charAt(0)}
-                      </span>
-                    </div>
+                    {(profile?.imageUrl || user.imageUrl) ? (
+                      <img 
+                        src={profile?.imageUrl || user.imageUrl} 
+                        alt={profile?.name || user.name} 
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-24 h-24 rounded-full bg-gradient-to-br from-teal-100 to-cyan-100 flex items-center justify-center">
+                        <span className="text-4xl font-heading font-bold text-teal-600">
+                          {(profile?.name || user.name || "U").charAt(0)}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
                 {/* Decorative circles */}

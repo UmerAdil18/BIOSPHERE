@@ -1,9 +1,8 @@
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Loader2, Send } from 'lucide-react';
-import { useContactForm } from '@/hooks/use-portfolio';
+import { useContactForm, useProfile } from '@/hooks/use-portfolio';
 import {
   Form,
   FormControl,
@@ -26,6 +25,7 @@ type ContactFormValues = z.infer<typeof contactSchema>;
 
 export function ContactForm() {
   const { mutate, isPending } = useContactForm();
+  const { data: profile } = useProfile();
   
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactSchema),
@@ -37,7 +37,9 @@ export function ContactForm() {
   });
 
   function onSubmit(data: ContactFormValues) {
-    mutate(data, {
+    if (!profile?.id) return;
+    
+    mutate({ ...data, userId: profile.id }, {
       onSuccess: () => {
         form.reset();
       },

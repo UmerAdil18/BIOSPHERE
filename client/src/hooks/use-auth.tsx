@@ -13,6 +13,7 @@ type User = {
   phone?: string;
   linkedin?: string;
   imageUrl?: string;
+  cvUrl?: string;
 } | null;
 
 type AuthContextType = {

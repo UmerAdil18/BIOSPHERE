@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'wouter';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Loader2, Save, Plus, X, ArrowLeft, LogOut, Trash2 } from 'lucide-react';
+import { Loader2, Save, Plus, X, ArrowLeft, LogOut, Trash2, Upload, FileText, Mail, Eye } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { apiRequest } from '@/lib/queryClient';
 import { Button } from '@/components/ui/button';
@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/form';
 import { Link } from 'wouter';
 import { useToast } from '@/hooks/use-toast';
-import type { Education, Experience, Skill, Project, Certification, Language } from '@shared/schema';
+import type { Education, Experience, Skill, Project, Certification, Language, ContactMessage } from '@shared/schema';
 
 const profileSchema = z.object({
   name: z.string().min(2),
@@ -38,21 +38,22 @@ export default function Settings() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('profile');
+  const imageInputRef = useRef<HTMLInputElement>(null);
+  const cvInputRef = useRef<HTMLInputElement>(null);
 
-  // Redirect if not logged in
   useEffect(() => {
     if (!authLoading && !user) {
       setLocation('/login');
     }
   }, [user, authLoading, setLocation]);
 
-  // Fetch portfolio data
   const { data: experiences = [] } = useQuery<Experience[]>({ queryKey: ['/api/experience'] });
   const { data: educations = [] } = useQuery<Education[]>({ queryKey: ['/api/education'] });
   const { data: skills = [] } = useQuery<Skill[]>({ queryKey: ['/api/skills'] });
   const { data: projects = [] } = useQuery<Project[]>({ queryKey: ['/api/projects'] });
   const { data: certifications = [] } = useQuery<Certification[]>({ queryKey: ['/api/certifications'] });
   const { data: languages = [] } = useQuery<Language[]>({ queryKey: ['/api/languages'] });
+  const { data: messages = [] } = useQuery<ContactMessage[]>({ queryKey: ['/api/messages'] });
 
   const form = useForm<ProfileValues>({
     resolver: zodResolver(profileSchema),
@@ -91,7 +92,50 @@ export default function Settings() {
     },
   });
 
-  // Delete mutations
+  const uploadImageMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append('image', file);
+      const res = await fetch('/api/upload/image', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include',
+      });
+      if (!res.ok) throw new Error('Upload failed');
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/profile'] });
+      toast({ title: "Profile image updated!" });
+    },
+    onError: () => {
+      toast({ title: "Failed to upload image", variant: "destructive" });
+    },
+  });
+
+  const uploadCvMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append('cv', file);
+      const res = await fetch('/api/upload/cv', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include',
+      });
+      if (!res.ok) throw new Error('Upload failed');
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/profile'] });
+      toast({ title: "CV uploaded successfully!" });
+    },
+    onError: () => {
+      toast({ title: "Failed to upload CV", variant: "destructive" });
+    },
+  });
+
   const deleteExperience = useMutation({
     mutationFn: async (id: number) => {
       await apiRequest('DELETE', `/api/experience/${id}`, {});
@@ -152,7 +196,16 @@ export default function Settings() {
     },
   });
 
-  // Add new item states
+  const deleteMessage = useMutation({
+    mutationFn: async (id: number) => {
+      await apiRequest('DELETE', `/api/messages/${id}`, {});
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/messages'] });
+      toast({ title: "Message deleted" });
+    },
+  });
+
   const [newExp, setNewExp] = useState({ company: '', role: '', duration: '', description: '' });
   const [newEdu, setNewEdu] = useState({ institution: '', degree: '', year: '' });
   const [newSkill, setNewSkill] = useState({ category: '', items: '' });
@@ -160,7 +213,6 @@ export default function Settings() {
   const [newCert, setNewCert] = useState({ title: '', issuer: '' });
   const [newLang, setNewLang] = useState({ language: '', proficiency: 'Fluent' });
 
-  // Add mutations
   const addExperience = useMutation({
     mutationFn: async (data: typeof newExp) => {
       const res = await apiRequest('POST', '/api/experience', data);
@@ -233,6 +285,20 @@ export default function Settings() {
     },
   });
 
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      uploadImageMutation.mutate(file);
+    }
+  };
+
+  const handleCvUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      uploadCvMutation.mutate(file);
+    }
+  };
+
   if (authLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -243,6 +309,8 @@ export default function Settings() {
 
   if (!user) return null;
 
+  const unreadMessages = messages.filter(m => !m.isRead).length;
+
   const tabs = [
     { id: 'profile', label: 'Profile' },
     { id: 'experience', label: 'Experience' },
@@ -251,6 +319,7 @@ export default function Settings() {
     { id: 'projects', label: 'Projects' },
     { id: 'certifications', label: 'Certifications' },
     { id: 'languages', label: 'Languages' },
+    { id: 'messages', label: `Messages${unreadMessages > 0 ? ` (${unreadMessages})` : ''}` },
   ];
 
   return (
@@ -272,7 +341,6 @@ export default function Settings() {
             <p className="text-muted-foreground mt-1">Manage your portfolio information</p>
           </div>
 
-          {/* Tabs */}
           <div className="border-b border-border overflow-x-auto">
             <div className="flex p-2 gap-1">
               {tabs.map(tab => (
@@ -295,93 +363,176 @@ export default function Settings() {
           <div className="p-6">
             {/* Profile Tab */}
             {activeTab === 'profile' && (
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(data => updateProfileMutation.mutate(data))} className="space-y-6">
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Full Name</FormLabel>
-                        <FormControl>
-                          <Input {...field} className="h-11" />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="title"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Professional Title</FormLabel>
-                        <FormControl>
-                          <Input {...field} className="h-11" />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="summary"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>About You</FormLabel>
-                        <FormControl>
-                          <Textarea {...field} className="min-h-[120px]" />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="location"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Location</FormLabel>
-                          <FormControl>
-                            <Input {...field} className="h-11" />
-                          </FormControl>
-                        </FormItem>
+              <div className="space-y-8">
+                {/* Profile Image Upload */}
+                <div className="flex flex-col sm:flex-row items-center gap-6 p-6 border border-border rounded-xl bg-secondary/30">
+                  <div className="relative">
+                    <div className="w-24 h-24 rounded-full overflow-hidden bg-gradient-to-br from-teal-100 to-cyan-100 flex items-center justify-center border-4 border-white shadow-lg">
+                      {user.imageUrl ? (
+                        <img src={user.imageUrl} alt="Profile" className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-3xl font-heading font-bold text-teal-600">
+                          {(user.name || "U").charAt(0)}
+                        </span>
                       )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="phone"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Phone</FormLabel>
-                          <FormControl>
-                            <Input {...field} className="h-11" />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
+                    </div>
                   </div>
-                  <FormField
-                    control={form.control}
-                    name="linkedin"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>LinkedIn URL</FormLabel>
-                        <FormControl>
-                          <Input {...field} className="h-11" />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <Button 
-                    type="submit" 
-                    disabled={updateProfileMutation.isPending}
-                    className="bg-gradient-to-r from-teal-500 to-cyan-500 text-white"
-                    data-testid="button-save-profile"
-                  >
-                    {updateProfileMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
-                    Save Changes
-                  </Button>
-                </form>
-              </Form>
+                  <div className="flex-1 text-center sm:text-left">
+                    <h3 className="font-semibold mb-2">Profile Photo</h3>
+                    <p className="text-sm text-muted-foreground mb-3">Upload a photo for your portfolio</p>
+                    <input
+                      ref={imageInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                    />
+                    <Button 
+                      variant="outline" 
+                      onClick={() => imageInputRef.current?.click()}
+                      disabled={uploadImageMutation.isPending}
+                    >
+                      {uploadImageMutation.isPending ? (
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      ) : (
+                        <Upload className="w-4 h-4 mr-2" />
+                      )}
+                      Upload Image
+                    </Button>
+                  </div>
+                </div>
+
+                {/* CV Upload */}
+                <div className="flex flex-col sm:flex-row items-center gap-6 p-6 border border-border rounded-xl bg-secondary/30">
+                  <div className="w-24 h-24 rounded-xl bg-gradient-to-br from-teal-100 to-cyan-100 flex items-center justify-center border-4 border-white shadow-lg">
+                    <FileText className="w-10 h-10 text-teal-600" />
+                  </div>
+                  <div className="flex-1 text-center sm:text-left">
+                    <h3 className="font-semibold mb-2">CV / Resume</h3>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      {user.cvUrl ? "Your CV is uploaded. Visitors can download it." : "Upload your CV for visitors to download"}
+                    </p>
+                    <input
+                      ref={cvInputRef}
+                      type="file"
+                      accept=".pdf,.doc,.docx"
+                      onChange={handleCvUpload}
+                      className="hidden"
+                    />
+                    <div className="flex gap-2 flex-wrap justify-center sm:justify-start">
+                      <Button 
+                        variant="outline" 
+                        onClick={() => cvInputRef.current?.click()}
+                        disabled={uploadCvMutation.isPending}
+                      >
+                        {uploadCvMutation.isPending ? (
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        ) : (
+                          <Upload className="w-4 h-4 mr-2" />
+                        )}
+                        {user.cvUrl ? "Replace CV" : "Upload CV"}
+                      </Button>
+                      {user.cvUrl && (
+                        <a href={user.cvUrl} download>
+                          <Button variant="outline">
+                            <FileText className="w-4 h-4 mr-2" />
+                            Download CV
+                          </Button>
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Profile Form */}
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(data => updateProfileMutation.mutate(data))} className="space-y-6">
+                    <FormField
+                      control={form.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Full Name</FormLabel>
+                          <FormControl>
+                            <Input {...field} className="h-11" />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="title"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Professional Title</FormLabel>
+                          <FormControl>
+                            <Input {...field} className="h-11" />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="summary"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>About You</FormLabel>
+                          <FormControl>
+                            <Textarea {...field} className="min-h-[120px]" />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="location"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Location</FormLabel>
+                            <FormControl>
+                              <Input {...field} className="h-11" />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="phone"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Phone</FormLabel>
+                            <FormControl>
+                              <Input {...field} className="h-11" />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <FormField
+                      control={form.control}
+                      name="linkedin"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>LinkedIn URL</FormLabel>
+                          <FormControl>
+                            <Input {...field} className="h-11" />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <Button 
+                      type="submit" 
+                      disabled={updateProfileMutation.isPending}
+                      className="bg-gradient-to-r from-teal-500 to-cyan-500 text-white"
+                      data-testid="button-save-profile"
+                    >
+                      {updateProfileMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
+                      Save Changes
+                    </Button>
+                  </form>
+                </Form>
+              </div>
             )}
 
             {/* Experience Tab */}
@@ -392,7 +543,7 @@ export default function Settings() {
                     <div key={exp.id} className="p-4 border border-border rounded-lg flex justify-between items-start">
                       <div>
                         <h4 className="font-semibold">{exp.role}</h4>
-                        <p className="text-sm text-muted-foreground">{exp.company} • {exp.duration}</p>
+                        <p className="text-sm text-muted-foreground">{exp.company} - {exp.duration}</p>
                         <p className="text-sm mt-1">{exp.description}</p>
                       </div>
                       <Button 
@@ -419,7 +570,8 @@ export default function Settings() {
                     disabled={!newExp.company || !newExp.role || addExperience.isPending}
                     className="bg-gradient-to-r from-teal-500 to-cyan-500 text-white"
                   >
-                    <Plus className="w-4 h-4 mr-2" /> Add Experience
+                    {addExperience.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
+                    Save Changes
                   </Button>
                 </div>
               </div>
@@ -433,7 +585,7 @@ export default function Settings() {
                     <div key={edu.id} className="p-4 border border-border rounded-lg flex justify-between items-start">
                       <div>
                         <h4 className="font-semibold">{edu.degree}</h4>
-                        <p className="text-sm text-muted-foreground">{edu.institution} • {edu.year}</p>
+                        <p className="text-sm text-muted-foreground">{edu.institution} - {edu.year}</p>
                       </div>
                       <Button variant="ghost" size="icon" onClick={() => deleteEducation.mutate(edu.id)}>
                         <Trash2 className="w-4 h-4 text-destructive" />
@@ -453,7 +605,8 @@ export default function Settings() {
                     disabled={!newEdu.institution || !newEdu.degree || addEducation.isPending}
                     className="bg-gradient-to-r from-teal-500 to-cyan-500 text-white"
                   >
-                    <Plus className="w-4 h-4 mr-2" /> Add Education
+                    {addEducation.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
+                    Save Changes
                   </Button>
                 </div>
               </div>
@@ -488,7 +641,8 @@ export default function Settings() {
                     disabled={!newSkill.category || !newSkill.items || addSkill.isPending}
                     className="bg-gradient-to-r from-teal-500 to-cyan-500 text-white"
                   >
-                    <Plus className="w-4 h-4 mr-2" /> Add Skills
+                    {addSkill.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
+                    Save Changes
                   </Button>
                 </div>
               </div>
@@ -521,7 +675,8 @@ export default function Settings() {
                     disabled={!newProject.title || addProject.isPending}
                     className="bg-gradient-to-r from-teal-500 to-cyan-500 text-white"
                   >
-                    <Plus className="w-4 h-4 mr-2" /> Add Project
+                    {addProject.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
+                    Save Changes
                   </Button>
                 </div>
               </div>
@@ -552,7 +707,8 @@ export default function Settings() {
                     disabled={!newCert.title || addCertification.isPending}
                     className="bg-gradient-to-r from-teal-500 to-cyan-500 text-white"
                   >
-                    <Plus className="w-4 h-4 mr-2" /> Add Certification
+                    {addCertification.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
+                    Save Changes
                   </Button>
                 </div>
               </div>
@@ -585,11 +741,55 @@ export default function Settings() {
                     disabled={!newLang.language || addLanguage.isPending}
                     className="bg-gradient-to-r from-teal-500 to-cyan-500 text-white"
                   >
-                    <Plus className="w-4 h-4 mr-2" /> Add Language
+                    {addLanguage.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
+                    Save Changes
                   </Button>
                 </div>
               </div>
             )}
+
+            {/* Messages Tab */}
+            {activeTab === 'messages' && (
+              <div className="space-y-6">
+                <div className="flex items-center gap-2 text-muted-foreground mb-4">
+                  <Mail className="w-5 h-5" />
+                  <span>Messages from your portfolio visitors</span>
+                </div>
+                {messages.length === 0 ? (
+                  <div className="text-center py-12 text-muted-foreground">
+                    <Mail className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                    <p>No messages yet</p>
+                    <p className="text-sm">When someone sends you a message through your portfolio, it will appear here.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {messages.map((msg) => (
+                      <div key={msg.id} className={`p-4 border rounded-lg ${msg.isRead ? 'border-border' : 'border-teal-500 bg-teal-50/50'}`}>
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <h4 className="font-semibold">{msg.senderName}</h4>
+                              {!msg.isRead && (
+                                <span className="px-2 py-0.5 text-xs bg-teal-500 text-white rounded-full">New</span>
+                              )}
+                            </div>
+                            <p className="text-sm text-teal-600 mb-2">{msg.senderEmail}</p>
+                            <p className="text-sm">{msg.message}</p>
+                            <p className="text-xs text-muted-foreground mt-2">
+                              {msg.createdAt ? new Date(msg.createdAt).toLocaleString() : ''}
+                            </p>
+                          </div>
+                          <Button variant="ghost" size="icon" onClick={() => deleteMessage.mutate(msg.id)}>
+                            <Trash2 className="w-4 h-4 text-destructive" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
           </div>
         </div>
       </div>

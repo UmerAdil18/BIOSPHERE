@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&family=Poppins:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -52,7 +52,7 @@
   --chart-4: 199 30% 80%;
   --chart-5: 199 20% 85%;
   
-  --font-heading: 'Playfair Display', serif;
+  --font-heading: 'DM Serif Display', serif;
   --font-body: 'Inter', sans-serif;
   
   --button-outline: rgba(0,0,0, .10);

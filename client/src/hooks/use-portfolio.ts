@@ -48,7 +48,7 @@ export function useContactForm() {
   const { toast } = useToast();
   
   return useMutation({
-    mutationFn: async (data: { name: string; email: string; message: string }) => {
+    mutationFn: async (data: { name: string; email: string; message: string; userId: number }) => {
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { "Content-Type": "application/json" },

@@ -442,7 +442,7 @@ export async function registerRoutes(
   });
 
   // File upload routes
-  app.use("/uploads", require("express").static(uploadDir));
+  app.use("/uploads", (await import("express")).default.static(uploadDir));
 
   app.post("/api/upload/image", requireAuth, upload.single('image'), async (req, res) => {
     try {
