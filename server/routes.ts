@@ -177,7 +177,7 @@ export async function registerRoutes(
 
   app.patch("/api/education/:id", requireAuth, async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       const data = await storage.updateEducation(id, req.body);
       res.json(data);
     } catch (err) {
@@ -188,7 +188,7 @@ export async function registerRoutes(
 
   app.delete("/api/education/:id", requireAuth, async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       await storage.deleteEducation(id);
       res.json({ success: true });
     } catch (err) {
@@ -217,7 +217,7 @@ export async function registerRoutes(
 
   app.patch("/api/experience/:id", requireAuth, async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       const data = await storage.updateExperience(id, req.body);
       res.json(data);
     } catch (err) {
@@ -228,7 +228,7 @@ export async function registerRoutes(
 
   app.delete("/api/experience/:id", requireAuth, async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       await storage.deleteExperience(id);
       res.json({ success: true });
     } catch (err) {
@@ -257,7 +257,7 @@ export async function registerRoutes(
 
   app.patch("/api/skills/:id", requireAuth, async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       const data = await storage.updateSkill(id, req.body);
       res.json(data);
     } catch (err) {
@@ -268,7 +268,7 @@ export async function registerRoutes(
 
   app.delete("/api/skills/:id", requireAuth, async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       await storage.deleteSkill(id);
       res.json({ success: true });
     } catch (err) {
@@ -297,7 +297,7 @@ export async function registerRoutes(
 
   app.patch("/api/projects/:id", requireAuth, async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       const data = await storage.updateProject(id, req.body);
       res.json(data);
     } catch (err) {
@@ -308,7 +308,7 @@ export async function registerRoutes(
 
   app.delete("/api/projects/:id", requireAuth, async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       await storage.deleteProject(id);
       res.json({ success: true });
     } catch (err) {
@@ -337,7 +337,7 @@ export async function registerRoutes(
 
   app.patch("/api/certifications/:id", requireAuth, async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       const data = await storage.updateCertification(id, req.body);
       res.json(data);
     } catch (err) {
@@ -348,7 +348,7 @@ export async function registerRoutes(
 
   app.delete("/api/certifications/:id", requireAuth, async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       await storage.deleteCertification(id);
       res.json({ success: true });
     } catch (err) {
@@ -377,7 +377,7 @@ export async function registerRoutes(
 
   app.patch("/api/languages/:id", requireAuth, async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       const data = await storage.updateLanguage(id, req.body);
       res.json(data);
     } catch (err) {
@@ -388,7 +388,7 @@ export async function registerRoutes(
 
   app.delete("/api/languages/:id", requireAuth, async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       await storage.deleteLanguage(id);
       res.json({ success: true });
     } catch (err) {
