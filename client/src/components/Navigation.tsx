@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link as ScrollLink } from 'react-scroll';
+import { Link } from 'wouter';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Settings, LogIn } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/hooks/use-auth';
 
 const navItems = [
   { name: 'About', to: 'about' },
@@ -16,6 +18,7 @@ const navItems = [
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { user } = useAuth();
   const { scrollY } = useScroll();
   
   const navBackground = useTransform(
@@ -80,23 +83,47 @@ export function Navigation() {
                 </ScrollLink>
               </motion.div>
             ))}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.3 }}
-              className="ml-2"
-            >
-              <ScrollLink
-                to="contact"
-                spy={true}
-                smooth={true}
-                offset={-100}
-                duration={500}
-                className="cursor-pointer px-5 py-2 rounded-lg bg-gradient-to-r from-teal-500 to-cyan-500 text-white hover:from-teal-600 hover:to-cyan-600 transition-all duration-300 font-medium text-sm shadow-lg"
+            
+            {user ? (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.3 }}
+                className="ml-2"
               >
-                Hire Me
-              </ScrollLink>
-            </motion.div>
+                <Link
+                  href="/settings"
+                  className="cursor-pointer px-5 py-2 rounded-lg bg-gradient-to-r from-teal-500 to-cyan-500 text-white hover:from-teal-600 hover:to-cyan-600 transition-all duration-300 font-medium text-sm shadow-lg inline-flex items-center gap-2"
+                >
+                  <Settings className="w-4 h-4" /> Settings
+                </Link>
+              </motion.div>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.3 }}
+                className="ml-2 flex gap-2"
+              >
+                <Link
+                  href="/login"
+                  className="cursor-pointer px-4 py-2 rounded-lg border border-border text-foreground hover:bg-secondary transition-all duration-300 font-medium text-sm inline-flex items-center gap-2"
+                  data-testid="link-login"
+                >
+                  <LogIn className="w-4 h-4" /> Login
+                </Link>
+                <ScrollLink
+                  to="contact"
+                  spy={true}
+                  smooth={true}
+                  offset={-100}
+                  duration={500}
+                  className="cursor-pointer px-5 py-2 rounded-lg bg-gradient-to-r from-teal-500 to-cyan-500 text-white hover:from-teal-600 hover:to-cyan-600 transition-all duration-300 font-medium text-sm shadow-lg"
+                >
+                  Hire Me
+                </ScrollLink>
+              </motion.div>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -134,17 +161,36 @@ export function Navigation() {
                 {item.name}
               </ScrollLink>
             ))}
-            <ScrollLink
-              to="contact"
-              spy={true}
-              smooth={true}
-              offset={-100}
-              duration={500}
-              className="block px-4 py-3 rounded-lg text-base font-medium bg-gradient-to-r from-teal-500 to-cyan-500 text-white text-center mt-4"
-              onClick={() => setIsOpen(false)}
-            >
-              Hire Me
-            </ScrollLink>
+            {user ? (
+              <Link
+                href="/settings"
+                className="block px-4 py-3 rounded-lg text-base font-medium bg-gradient-to-r from-teal-500 to-cyan-500 text-white text-center mt-4"
+                onClick={() => setIsOpen(false)}
+              >
+                Settings
+              </Link>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="block px-4 py-3 rounded-lg text-base font-medium text-foreground hover:bg-secondary transition-colors text-center mt-4 border border-border"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Login
+                </Link>
+                <ScrollLink
+                  to="contact"
+                  spy={true}
+                  smooth={true}
+                  offset={-100}
+                  duration={500}
+                  className="block px-4 py-3 rounded-lg text-base font-medium bg-gradient-to-r from-teal-500 to-cyan-500 text-white text-center mt-2"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Hire Me
+                </ScrollLink>
+              </>
+            )}
           </div>
         </motion.div>
       )}
